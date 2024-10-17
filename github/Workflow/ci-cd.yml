@@ -1,0 +1,38 @@
+name: CI/CD Pipeline 22IT093
+
+on:
+  push:
+    branches:
+      - main  # Trigger pipeline on push to the main branch
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: self-hosted  # Uses the local runner
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          npm install
+
+      - name: Run Tests
+        run: |
+          npm test
+
+  deploy:
+    runs-on: self-hosted  # Ensure this job runs on the local server
+    needs: build  # This job runs after the build succeeds
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Local Server
+        run: |
+          echo "Deploying application to local server..."
+          # Add commands to deploy your app locally, e.g.:
+          pm2 stop app || true
+          pm2 start app.js --name "socialecho"
